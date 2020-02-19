@@ -1,0 +1,25 @@
+{
+  "name": "MaratonaDev",
+  "version": "1.0.0",
+  "description": "Site criado durante a MaratonaDev Rocketseat. O site está sendo desenvolvido com a intenção de incentivar a doação de sangue.",
+  "main": "script.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ElizeuAlves/MaratonaDev.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "2.0.2",
+    "nunjucks": "^3.0.2"
+  },
+  "bugs": {
+    "url": "https://github.com/ElizeuAlves/MaratonaDev/issues"
+  },
+  "homepage": "https://github.com/ElizeuAlves/MaratonaDev#readme"
+}
