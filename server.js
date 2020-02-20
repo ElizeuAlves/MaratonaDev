@@ -12,6 +12,9 @@ nunjucks.configure("./", {
 /* Configurando o servidor para apresentar arquivos extras */
 server.use(express.static('public')); 
 
+// Habilitando body do formulário
+server.use(express.urlencoded({ extended: true }));
+
 /* Lista de doadores */
 const donors = [
     {
@@ -36,6 +39,21 @@ const donors = [
 server.get("/", function(req, res){
     return res.render("index.html", { donors });
 }); 
+
+server.post("/", function(req, res){
+    //Pegar dados do formulário
+    const name = req.body.name;
+    const email = req.body.email;
+    const blood = req.body.blood;
+
+    // Colocando valores dentro do array
+    donors.push({
+        name: name,
+        blood: blood,
+    });
+
+    return res.redirect("/");
+})
 
 
 /* Iniciando o servidor */
