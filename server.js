@@ -2,6 +2,24 @@
 const express = require("express");
 const server = express();
 
+/* Configurando o servidor para apresentar arquivos extras */
+server.use(express.static('public')); 
+
+// Habilitando body do formulário
+server.use(express.urlencoded({ extended: true }));
+
+// Configurar conexão com banco de dados
+const Pool = require('pg').Pool;
+
+const db = new Pool({
+    user: 'postgres',
+    password: '0000',
+    host: 'localhost',
+    port: 5432,
+    database: 'doe'
+});
+
+
 /* Configurando a template Engine */
 const nunjucks = require("nunjucks");
 nunjucks.configure("./", {
@@ -9,35 +27,16 @@ nunjucks.configure("./", {
     noCache: true,
 });
 
-/* Configurando o servidor para apresentar arquivos extras */
-server.use(express.static('public')); 
 
-// Habilitando body do formulário
-server.use(express.urlencoded({ extended: true }));
-
-/* Lista de doadores */
-const donors = [
-    {
-        name: "Diego Fernandes",
-        blood: "AB+"
-    },
-    {
-        name: "Cleiton Souza",
-        blood: "B+"
-    },
-    {
-        name: "Robson Marques",
-        blood: "O+"
-    },
-    {
-        name: "Mayke Brito",
-        blood: "A+"
-    }
-]
 
 /* Configurando a apresentação da página */
 server.get("/", function(req, res){
-    return res.render("index.html", { donors });
+    db.query("SELECT * FROM donors", function(err, result){
+        if (err) return res.send("Erro de bando de dados.");
+
+        const donors = result.rows;
+        return res.render("index.html", { donors });
+    })
 }); 
 
 server.post("/", function(req, res){
@@ -46,13 +45,24 @@ server.post("/", function(req, res){
     const email = req.body.email;
     const blood = req.body.blood;
 
-    // Colocando valores dentro do array
-    donors.push({
-        name: name,
-        blood: blood,
-    });
+    // Se algum dado vier vazio
+    if (name == "" || email == "" || blood == "")
+    {
+        return res.send("Todos os campos são obrigatórios");
+    }
 
-    return res.redirect("/");
+    // Colocando valores dentro do banco de dados
+    const query = `INSERT INTO "donors" ("name", "email", "blood") VALUES ($1, $2, $3)`;
+
+    const values = [name, email, blood];
+
+    db.query(query, values, function(err){
+        // Fluxo de erro
+        if(err) return res.send("Erro no banco de dados");
+
+        // Fluxo ideal
+        return res.redirect("/");
+    });
 })
 
 
